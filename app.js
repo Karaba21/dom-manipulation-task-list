@@ -45,28 +45,100 @@ let currentIdNumber = tasks.length;
 // 0 - Bajar repo, todos los ejercicios seran parte
 // del mismo proyecto js-dom-manipulation-essentials
 // Hacer una funcion que cree dinamicamente las task
-function createTaskComponent(task) {}
+function createTaskComponent(task) {
+  const taskItem = document.createElement('li');
+  taskItem.innerHTML = `
+      <h4>${task.name}</h4>
+      <p>Owner: ${task.owner}</p>
+      <p>Description: ${task.description}</p>
+      <img src="${task.imgUrl}" alt="${task.name}" width="100">
+  `;
+  
+  // Añadir evento para eliminar tarea al hacer clic
+  taskItem.addEventListener('click', () => deleteTaskHandler(taskItem));
+  
+  return taskItem;
+}
 
-function loadTasks() {}
+function loadTasks() {
+  const taskList = document.querySelector('ul');
+}
 
 // 1 - Funcion
 // Mostrar en un mensaje de alerta los valores del form
-function addTaskAlert(newTask) {}
+function addTaskAlert(newTask) {
+  alert(`Task Name: ${newTask.name}\nTask Owner: ${newTask.owner}\nTask Description: ${newTask.description}\nTask Image URL: ${newTask.imgUrl}`);
+}
 
 // 2 - Funcion
 // Agregar elemento en la lista al llenar el formulario
 
-function addTaskHandler(event) {}
+function addTaskHandler(event) {
+  event.preventDefault();
+  
+  // Obtener valores del formulario
+  const taskName = document.getElementById('nameInput').value;
+  const taskOwner = document.getElementById('ownerInput').value;
+  const taskDescription = document.getElementById('descriptionInput').value;
+  const taskImgUrl = document.getElementById('imgUrlInput').value;
+
+  // Crear objeto de la tarea
+  const newTask = {
+      name: taskName,
+      owner: taskOwner,
+      description: taskDescription,
+      imgUrl: taskImgUrl
+  };
+  
+  // 1) Mostrar alerta con los valores
+  addTaskAlert(newTask);
+
+  // Crear el componente de la tarea
+  const taskItem = createTaskComponent(newTask);
+  
+  // Añadir tarea a la lista
+  document.querySelector('ul').appendChild(taskItem);
+
+  // Limpiar el formulario
+  event.target.reset();
+}
 
 // 3 - Funcion
 // Eliminar elemento en la lista al hacer click sobre el elemento
-function deleteTaskHandler(taskElement) {}
+function deleteTaskHandler(taskElement) {
+  taskElement.remove();
+  redirectWhenNoTask(); // Verificar si no quedan tareas
+}
 
 // 4 - Funcion
 // Crear un boton para vaciar/eliminar todas las tareas
-function deleteAllTaskHandler() {}
+function deleteAllTaskHandler() {
+  const taskList = document.querySelector('ul');
+  taskList.innerHTML = ''; // Eliminar todas las tareas
+  redirectWhenNoTask(); // Verificar si no quedan tareas
+}
 
 // 5 - Funcion
 // Si ya no quedan tareas navegar programaticamente
 // a www.youtube.com
-function redirectWhenNoTask() {}
+function redirectWhenNoTask() {
+  const taskList = document.querySelector('ul');
+  if (taskList.children.length === 0) {
+      window.location.href = 'https://www.youtube.com';
+  }
+}
+
+// Asociar eventos al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('.main__form');
+  const clearButton = document.querySelector('.clear-button');
+
+  form.addEventListener('submit', addTaskHandler);
+  clearButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      deleteAllTaskHandler();
+  });
+
+  // Cargar las tareas previas (si es necesario)
+  loadTasks();
+});
